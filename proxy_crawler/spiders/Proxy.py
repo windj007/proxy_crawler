@@ -15,4 +15,6 @@ class ProxySpider(CrawlSpider):
 
     def parse_item(self, response):
         for addr in ProxySpider._address_re.findall(response.body):
-            yield ProxyItem(addr)
+            res = ProxyItem()
+            res['address'] = addr
+            yield res
