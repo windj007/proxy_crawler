@@ -9,7 +9,7 @@ class ProxyCrawlerPipeline(object):
 
     def process_item(self, item, spider):
         if self.test_proxy(item['address']):
-            with open(self._res_filename, 'w') as out_file:
+            with open(self._res_filename, 'a') as out_file:
                 print >> out_file, item['address']
 
     def test_proxy(self, proxy):
