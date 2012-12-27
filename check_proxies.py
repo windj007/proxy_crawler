@@ -8,7 +8,7 @@ aparser = argparse.ArgumentParser(sys.argv[0])
 aparser.add_argument('in_file', type = str, help='source file containing list of proxies')
 aparser.add_argument('out_file', type = str, help='file to write filtered proxies to')
 aparser.add_argument('-p', metavar = 'proc_cnt', type = int, default = 20, help='amount of processes to use for proxy checking')
-aparser.add_argument('-t', metavar = 'timeout', type = float, default = 1.0, help='connection timeout (in seconds)')
+aparser.add_argument('-t', metavar = 'timeout', type = float, default = 10.0, help='connection timeout (in seconds)')
 args = aparser.parse_args()
 
 
@@ -28,10 +28,10 @@ else:
 
 def check_proxy(address):
     try:
-        resp = requests.head('http://www.amazon.com', proxies = { 'http': address.strip() }, timeout = args.t)
+        resp = requests.head('http://www.amazon.com', proxies = { 'http': address }, timeout = args.t)
         return address if resp.status_code < 400 else None
     except Exception:
         return None
 
 checkpool = mp.Pool(processes = args.p)
-print >> outfile, "\n".join([addr for addr in checkpool.map(check_proxy, infile) if addr])
+print >> outfile, "\n".join([addr for addr in checkpool.map(check_proxy, map(str.strip, infile)) if addr])
