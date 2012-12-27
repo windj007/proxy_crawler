@@ -1,21 +1,41 @@
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from proxy_crawler.items import ProxyItem
+from scrapy import log
 import re
 
 
 class ProxySpider(CrawlSpider):
     name = 'Proxy'
-    start_urls = ['http://www.google.com/search?q=%2B%C3%A2%E2%82%AC%C2%9D%3A8080%C3%A2%E2%82%AC%C2%B3+%2B%C3%A2%E2%82%AC%C2%9D%3A3128%C3%A2%E2%82%AC%C2%B3+%2B%C3%A2%E2%82%AC%C2%9D%3A80%C3%A2%E2%82%AC%C2%B3+filetype%3Atxt#sclient=psy&q=%2B%E2%80%9D:8080%E2%80%B3+%2B%E2%80%9D%3A3128%E2%80%B3+%2B%E2%80%9D%3A80%E2%80%B3+filetype%3Atxt&aq=f&aqi=&aql=&oq=%2B%E2%80%9D:8080%E2%80%B3+%2B%E2%80%9D%3A3128%E2%80%B3+%2B%E2%80%9D%3A80%E2%80%B3+filetype%3Atxt&fp=1&cad=b&sei=gICTUPX5M6jP4QSEwIGwAQ&bav=on.2,or.r_gc.r_pw.r_qf.&sei=OoOTUJyZI8iA4gS1xYGABA']
+    start_urls = ['http://www.google.ru/search?q=%2B%94%3A8080+%2B%94%3A3128+%2B%94%3A80+filetype%3Atxt&hl=ru&source=hp&btnG=%CF%EE%E8%F1%EA+%E2+Google&gbv=1',
+                  'http://www.google.ru/search?q=%2B%94%3A8080+%2B%94%3A3128+%2B%94%3A80+filetype%3Atxt&hl=ru&source=hp&btnG=%CF%EE%E8%F1%EA+%E2+Google&gbv=1&start=10',
+                  'http://www.google.ru/search?q=%2B%94%3A8080+%2B%94%3A3128+%2B%94%3A80+filetype%3Atxt&hl=ru&source=hp&btnG=%CF%EE%E8%F1%EA+%E2+Google&gbv=1&start=20',
+                  'http://www.google.ru/search?q=%2B%94%3A8080+%2B%94%3A3128+%2B%94%3A80+filetype%3Atxt&hl=ru&source=hp&btnG=%CF%EE%E8%F1%EA+%E2+Google&gbv=1&start=30',
+                  'http://www.google.ru/search?q=%2B%94%3A8080+%2B%94%3A3128+%2B%94%3A80+filetype%3Atxt&hl=ru&source=hp&btnG=%CF%EE%E8%F1%EA+%E2+Google&gbv=1&start=40',
+                  ]
+
     _address_re = re.compile(r'(\d{1,4}\.\d{1,4}\.\d{1,4}\.\d{1,4})[^0-9]+(\d+)')
     
     rules = (
-        Rule(SgmlLinkExtractor(restrict_xpaths = '//h3[@class="r"]/a/@href'), callback='parse_list', follow=True),
+        Rule(SgmlLinkExtractor(restrict_xpaths = '//h3[@class="r"]'),
+             callback = 'parse_proxylist',
+             follow = True
+             ),
     )
 
-    def parse_list(self, response):
-        ip_re = re.compile
-        for row in ip_re.finditer(ip_re, response.body):
+    def parse_proxylist(self, response):
+        log.msg("Got response on %s" % response.url, log.INFO)
+
+        if response.status >= 400:
+            log.msg("Will not process page because status code is %d" % response.status_code, log.ERROR)
+            return
+
+        log.msg("Body is:", log.DEBUG)
+        log.msg(response.body, log.DEBUG)
+
+        addresses_parsed = ProxySpider._address_re.finditer(response.body)
+        for row in addresses_parsed:
             res = ProxyItem()
             res['address'] = '%s:%s' % tuple(row.groups())
+            log.msg("Extracted address: %s from %s" % (res['address'], response.url), log.DEBUG)
             yield res
