@@ -13,7 +13,6 @@ SPIDER_MODULES = ['proxy_crawler.spiders']
 NEWSPIDER_MODULE = 'proxy_crawler.spiders'
 USER_AGENT = 'w3m/0.5.3+cvs-1.1055' 
 
-
 ITEM_PIPELINES = [
     'proxy_crawler.pipelines.ProxyCrawlerPipeline'
 ]
@@ -25,4 +24,4 @@ LOG_LEVEL = 'INFO'
 
 DOWNLOAD_DELAY = 0.25
 
-PROXY_CHECK_TIMEOUT=5.0
+PROXY_CHECK_TIMEOUT=10.0

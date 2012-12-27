@@ -37,5 +37,5 @@ class ProxySpider(CrawlSpider):
         for row in addresses_parsed:
             res = ProxyItem()
             res['address'] = '%s:%s' % tuple(row.groups())
-            log.msg("Extracted address: %s from %s" % (res['address'], response.url), log.DEBUG)
+            log.msg("Extracted %s from %s" % (res['address'], response.url), log.DEBUG)
             yield res
