@@ -16,12 +16,10 @@ USER_AGENT = 'w3m/0.5.3+cvs-1.1055'
 ITEM_PIPELINES = [
     'proxy_crawler.pipelines.ProxyCrawlerPipeline'
 ]
-CONCURRENT_ITEMS = 100
+CONCURRENT_ITEMS = 1000
 
 LOG_ENABLED = True
 LOG_FILE = 'proxy.log'
 LOG_LEVEL = 'INFO'
 
 DOWNLOAD_DELAY = 0.25
-
-PROXY_CHECK_TIMEOUT = 10.0
