@@ -29,7 +29,7 @@ else:
 def check_proxy(address):
     try:
         resp = requests.head('http://www.amazon.com', proxies = { 'http': address }, timeout = args.t)
-        return address if resp.status_code < 400 else None
+        return address if ("amazon" in ''.join(resp.headers.values())) else None
     except Exception:
         return None
 
